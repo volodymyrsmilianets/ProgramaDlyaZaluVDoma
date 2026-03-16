@@ -3,9 +3,11 @@
     --text-color: #e5e5e5;
     --accent-color: #dfc89a;
     --header-bg: #0c0c0c;
-    --container-bg: rgba(255,255,255,0.03);
+    --container-bg: rgba(255, 255, 255, 0.03);
     --border-color: #2a2a2a;
     --input-bg: #111;
+    --color-error: #ff4d4d;
+    --color-success: #4ade80;
 }
 
 body {
@@ -13,12 +15,13 @@ body {
     margin: 0;
     background: var(--bg-color);
     color: var(--text-color);
-    transition: background 0.5s, color 0.5s;
+    transition: 0.3s;
 }
 
-h1, h2, h3 {
-    color: var(--accent-color);
-    letter-spacing: 2px;
+/* Крок 2: Доступність */
+:focus-visible {
+    outline: 3px solid var(--accent-color);
+    outline-offset: 3px;
 }
 
 header {
@@ -30,319 +33,54 @@ header {
     border-bottom: 1px solid var(--border-color);
 }
 
-.logo {
-    font-size: 24px;
-    font-weight: 700;
-    color: var(--accent-color);
-}
+nav ul { display: flex; list-style: none; gap: 20px; }
+nav a { color: var(--accent-color); text-decoration: none; cursor: pointer; }
 
-nav a {
-    color: var(--accent-color);
-    text-decoration: none;
-    margin-left: 25px;
-    font-size: 17px;
-    transition: 0.3s;
-    cursor: pointer;
-    padding: 5px 10px;
-    display: inline-block;
-}
-
-nav a:hover {
-    color: var(--text-color);
-}
-
-.hero {
-    height: 75vh;
-    padding: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background-color: var(--bg-color);
-    margin-bottom: 50px;
-}
-
-.hero-content {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 1100px;
-    max-width: 90%;
-    height: 100%;
-    margin: 0 auto;
-    padding: 0 40px;
-    background: none !important;
-    border: none !important;
-    box-shadow: none !important;
-}
-
-.hero-text {
-    flex: 1;
-    max-width: 50%;
-    color: var(--text-color);
-    padding-right: 40px;
-}
-
-.hero-text h1 {
-    font-size: 56px;
-    max-width: none;
-    color: var(--accent-color);
-}
-
-.hero-text p {
-    font-size: 20px;
-    max-width: none;
-    opacity: 0.9;
-    margin-top: 20px;
-}
-
-.hero-image-right {
-    width: 450px;
-    height: 450px;
-    border-radius: 10px;
-    box-shadow: 0 0 30px rgba(0, 0, 0, 0.7);
-    flex-shrink: 0;
-    background-size: cover;
-    background-position: center;
-    background-image: url("");
-    border: 3px solid var(--accent-color);
-    background-color: var(--container-bg);
-}
-
-@media (max-width: 1200px) {
-    .hero-content {
-        width: 900px;
-    }
-    .hero-image-right {
-        width: 350px;
-        height: 350px;
-    }
-    .hero-text h1 {
-        font-size: 48px;
-    }
-}
-@media (max-width: 992px) {
-    .hero {
-        height: auto;
-        padding: 40px 0;
-        margin-bottom: 20px;
-    }
-
-    .hero-content {
-        flex-direction: column;
-        text-align: center;
-        max-width: 90%;
-        padding: 0 20px;
-    }
-
-    .hero-text {
-        max-width: 100%;
-        padding-right: 0;
-    }
-
-    .hero-text h1 {
-        font-size: 38px;
-    }
-
-    .hero-image-right {
-        width: 100%;
-        max-width: 300px;
-        height: 200px;
-        margin-top: 20px;
-    }
-}
-
-
-.container {
-    max-width: 1100px;
+.container, .container-full {
+    max-width: 1000px;
     margin: 40px auto;
+    padding: 40px;
     background: var(--container-bg);
-    padding: 40px;
     border-radius: 12px;
-    border: 1px solid var(--border-color);
-    box-shadow: 0 0 25px rgba(0,0,0,0.4);
 }
 
-.container-full {
-    max-width: 1100px;
-    margin: 60px auto;
-    padding: 40px;
-    background: none;
-    border: none;
-    box-shadow: none;
-}
+.hero { min-height: 60vh; display: flex; align-items: center; }
+.hero-text h1 { font-size: 48px; color: var(--accent-color); }
 
-.about-us {
-    padding-bottom: 80px;
-}
+.form-group { margin-bottom: 20px; }
+label { display: block; color: var(--accent-color); margin-bottom: 8px; font-weight: bold; }
 
-.about-us h2 {
-    font-size: 32px;
-    text-align: center;
-}
-
-.about-text-only {
-    font-size: 20px;
-    line-height: 1.7;
-    margin-top: 40px;
-    max-width: 900px;
-    margin-left: auto;
-    margin-right: auto;
-    text-align: justify;
-}
-
-button {
+input, select {
     width: 100%;
-    max-width: 350px;
-    margin: 25px auto;
-    padding: 16px;
-    border-radius: 8px;
-    border: none;
-    background: var(--accent-color);
-    color: var(--bg-color);
-    font-weight: bold;
-    cursor: pointer;
-    font-size: 18px;
-    display: block;
-    transition: filter 0.3s;
-}
-
-button:hover {
-    filter: brightness(1.2);
-}
-
-#theme-buttons {
-    margin-top: 40px;
-    border-top: 1px solid var(--border-color);
-    padding-top: 20px;
-}
-
-#theme-buttons-container {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    margin-top: 20px;
-    justify-content: flex-start;
-}
-
-#theme-buttons-container button {
-    width: 120px;
-    height: 40px;
-    margin: 0;
-    padding: 0;
-
-    display: flex;
-    justify-content: center;
-    align-items: center;
-
-    font-size: 16px;
-    font-weight: normal;
-    max-width: none;
-
-    background-color: var(--accent-color);
-    color: var(--bg-color);
-}
-
-#theme-buttons-container button[onclick*="default"] {
-    background-color: #dfc89a !important;
-    color: #0a0a0a !important;
-}
-
-#theme-buttons-container button[onclick*="black_white"] {
-    background-color: white !important;
-    color: black !important;
-    border: 1px solid var(--border-color);
-}
-
-#theme-buttons-container button[onclick*="red"] {
-    background-color: red !important;
-}
-
-#theme-buttons-container button[onclick*="orange"] {
-    background-color: orange !important;
-}
-
-#theme-buttons-container button[onclick*="yellow"] {
-    background-color: gold !important;
-    color: black !important;
-}
-
-#theme-buttons-container button[onclick*="green"] {
-    background-color: green !important;
-}
-
-#theme-buttons-container button[onclick*="blue"] {
-    background-color: blue !important;
-}
-
-#theme-buttons-container button[onclick*="indigo"] {
-    background-color: indigo !important;
-    color: white !important;
-}
-
-label {
-    font-size: 18px;
-    margin-top: 20px;
-    display: block;
-    color: var(--accent-color);
-}
-
-select,
-input[type="text"],
-input[type="password"],
-input[type="number"] {
-    width: 100%;
-    padding: 14px;
-    margin-top: 10px;
+    padding: 12px;
     background: var(--input-bg);
     border: 1px solid var(--border-color);
-    color: var(--text-color);
-    border-radius: 8px;
-    box-sizing: border-box;
-    transition: background 0.3s, border-color 0.3s, color 0.3s;
+    color: white;
+    border-radius: 6px;
 }
 
-.password-container {
-    position: relative;
+/* Крок 4: Валідація */
+input:not(:placeholder-shown):invalid { border-color: var(--color-error); }
+input:not(:placeholder-shown):valid { border-color: var(--color-success); }
+
+button {
+    background: var(--accent-color);
+    color: black;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    width: 100%;
     margin-top: 10px;
 }
 
-.password-container input {
-    margin-top: 0;
-}
+button:hover { filter: brightness(1.2); }
 
+.password-wrapper { position: relative; }
 .password-toggle {
-    position: absolute;
-    top: 50%;
-    right: 15px;
-    transform: translateY(-50%);
-    cursor: pointer;
-    user-select: none;
-    color: var(--accent-color);
-    font-size: 18px;
+    position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
+    background: none; width: auto; color: var(--accent-color);
 }
 
-.result-box {
-    margin-top: 30px;
-    padding: 25px;
-    background: rgba(255,255,255,0.07);
-    border-radius: 10px;
-    border: 1px solid var(--border-color);
-    display: none;
-}
-
-ul li {
-    margin: 8px 0;
-    font-size: 18px;
-}
-
-#savedPrograms li {
-    margin-bottom: 25px;
-    padding: 15px;
-    background: rgba(255,255,255,0.05);
-    border-left: 5px solid var(--accent-color);
-}
-
-#statisticsBox strong {
-    color: var(--accent-color);
-    font-size: 22px;
-}
+.theme-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 10px; }
