@@ -4,157 +4,160 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TRpoint | Персональні програми</title>
-
     <link rel="stylesheet" href="style.css">
-
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
 </head>
-
 <body onload="loadTheme(); checkAuthAndRedirect()">
 
-    <header>
+    <header class="main-header">
         <div class="logo">TRpoint</div>
-        <nav>
-            <a onclick="showSection('about')">Про сайт</a>
-            <a id="navHome" style="display:none;" onclick="showSection('home')">Тренування</a>
-            <a id="navProfile" style="display:none;" onclick="showSection('profile')">Профіль</a>
-            <a id="navSaved" style="display:none;" onclick="showSection('saved')">Мої програми</a>
-            <a id="navAuth"></a>
+        <nav aria-label="Головна навігація">
+            <ul>
+                <li><a href="#" onclick="showSection('about')">Про сайт</a></li>
+                <li id="navHome" style="display:none;"><a href="#" onclick="showSection('home')">Тренування</a></li>
+                <li id="navProfile" style="display:none;"><a href="#" onclick="showSection('profile')">Профіль</a></li>
+                <li id="navSaved" style="display:none;"><a href="#" onclick="showSection('saved')">Мої програми</a></li>
+                <li id="navAuth"></li>
+            </ul>
         </nav>
     </header>
 
-    <section class="hero">
-        <div class="hero-content container">
-            <div class="hero-text">
-                <h1>Сформуй свою персональну тренувальну програму</h1>
-                <p>Розумна система підбирає тренування відповідно до твоєї цілі та рівня підготовки.</p>
-            </div>
-            <div class="hero-image-right">
+    <main>
+        <section class="hero" id="hero-section">
+            <div class="hero-content container-full">
+                <div class="hero-text">
+                    <h1>Сформуй свою персональну тренувальну програму</h1>
+                    <p>Розумна система підбирає тренування відповідно до твоєї цілі та рівня підготовки.</p>
                 </div>
-        </div>
-    </section>
+                <div class="hero-image-right"></div>
+            </div>
+        </section>
 
-    <section class="about-us" id="about">
-        <div class="container-full">
-             <h2>Про Вебсайт TRpoint</h2>
-
+        <section class="container-full" id="about">
+            <h2>Про Вебсайт TRpoint</h2>
             <div class="about-text-only">
-                <p>Наш додаток створений, щоб допомогти вам на шляху до здорового способу життя та фітнесу. Ми вирішуємо проблему, коли користувачі не знають, як правильно скласти тренування під власні цілі.</p>
-                <p>Система забезпечує персоналізовані тренувальні програми, адаптовані під ваші цілі (схуднення, набір м'язів, підтримка форми), рівень підготовки та параметри.</p>
-                <p>Ви можете створити профіль, отримувати індивідуальні плани на тиждень, відмічати виконані тренування та відстежувати прогрес у вигляді статистики.</p>
+                <p>Наш додаток створений, щоб допомогти вам на шляху до здорового способу життя. Ми забезпечуємо персоналізовані тренувальні програми, адаптовані під ваші цілі.</p>
             </div>
-
-            <div style="margin-top: 50px; text-align: center;">
-                <a onclick="showSection('auth')" id="aboutAuthLink">
-                    <button>Увійти / Зареєструватися</button>
-                </a>
+            <div class="auth-cta" id="aboutAuthLink">
+                <button type="button" onclick="showSection('auth')">Увійти / Зареєструватися</button>
             </div>
-        </div>
-    </section>
+        </section>
 
-    <div class="container" id="auth" style="display:none;">
-        <h2>Вхід та Реєстрація</h2>
-        <h3>Вхід</h3>
-        <input type="text" id="loginUsername" placeholder="Логін (Email)">
+        <section class="container" id="auth" style="display:none;">
+            <h2>Вхід та Реєстрація</h2>
+            <form id="loginForm" onsubmit="event.preventDefault(); loginUser();">
+                <fieldset>
+                    <legend>Вхід</legend>
+                    <div class="form-group">
+                        <label for="loginUsername">Логін (Email)</label>
+                        <input type="email" id="loginUsername" placeholder="example@mail.com" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="loginPassword">Пароль</label>
+                        <div class="password-wrapper">
+                            <input type="password" id="loginPassword" required minlength="6">
+                            <button type="button" class="password-toggle" onclick="togglePasswordVisibility('loginPassword', this)">👁️</button>
+                        </div>
+                    </div>
+                    <button type="submit">Увійти</button>
+                </fieldset>
+            </form>
 
-        <div class="password-container">
-            <input type="password" id="loginPassword" placeholder="Пароль">
-            <span class="password-toggle" onclick="togglePasswordVisibility('loginPassword', this)">👁️️</span>
-        </div>
+            <p class="switch-text">Не маєте облікового запису? <a href="#" onclick="showRegisterForm()">Зареєструватися</a></p>
 
-        <button onclick="loginUser()">Увійти</button>
-        <p style="margin-top: 15px; text-align: center;">Не маєте облікового запису? <a style="cursor: pointer;" onclick="showRegisterForm()">Зареєструватися</a></p>
+            <form id="registerForm" style="display:none;" onsubmit="event.preventDefault(); registerUser();">
+                <hr>
+                <fieldset>
+                    <legend>Реєстрація</legend>
+                    <div class="form-group">
+                        <label for="regUsername">Email</label>
+                        <input type="email" id="regUsername" placeholder="your@email.com" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="regPassword">Пароль (мін. 6 символів)</label>
+                        <div class="password-wrapper">
+                            <input type="password" id="regPassword" required minlength="6">
+                            <button type="button" class="password-toggle" onclick="togglePasswordVisibility('regPassword', this)">👁️</button>
+                        </div>
+                    </div>
+                    <button type="submit">Створити акаунт</button>
+                </fieldset>
+            </form>
+        </section>
 
-        <hr style="border-color: var(--border-color); margin: 30px 0;">
-
-        <div id="registerForm" style="display:none;">
-            <h3>Реєстрація</h3>
-            <input type="text" id="regUsername" placeholder="Логін (Email)">
-
-            <div class="password-container">
-                <input type="password" id="regPassword" placeholder="Пароль">
-                <span class="password-toggle" onclick="togglePasswordVisibility('regPassword', this)">👁️️</span>
+        <section class="container" id="home" style="display:none;">
+            <h2>Обери параметри</h2>
+            <div class="form-group">
+                <label for="goal">Фітнес-ціль</label>
+                <select id="goal">
+                    <option value="lose">Схуднення</option>
+                    <option value="muscle">М'язова маса</option>
+                    <option value="endurance">Витривалість</option>
+                </select>
             </div>
-
-            <button onclick="registerUser()">Зареєструватися</button>
-        </div>
-    </div>
-
-    <div class="container" id="home" style="display:none;">
-        <h2>Обери параметри</h2>
-        <label>Фітнес-ціль</label>
-        <select id="goal">
-            <option value="lose">Схуднення</option>
-            <option value="muscle">М'язова маса</option>
-            <option value="endurance">Витривалість</option>
-        </select>
-        <label>Рівень підготовки</label>
-        <select id="level">
-            <option value="beginner">Новачок</option>
-            <option value="middle">Середній</option>
-            <option value="pro">Просунутий</option>
-        </select>
-        <button onclick="generateProgram()">Згенерувати</button>
-        <div class="result-box" id="programBox" style="display:none;">
-            <h3>Згенерована програма:</h3>
-            <ul id="programList"></ul>
-            <button onclick="completeTraining()">Тренування Виконано!</button>
-            <button onclick="saveProgram()">Зберегти</button>
-        </div>
-    </div>
-
-    <div class="container" id="profile" style="display:none;">
-        <h2>Мій Профіль</h2>
-        <div id="profileForm">
-            <label>Ваше ім'я</label>
-            <input type="text" id="userName" placeholder="Ім'я">
-            <label>Вік</label>
-            <input type="number" id="userAge" placeholder="25">
-            <label>Вага (кг)</label>
-            <input type="number" id="userWeight" placeholder="70">
-            <label>Зріст (см)</label>
-            <input type="number" id="userHeight" placeholder="175">
-            <label>Фітнес-ціль</label>
-            <select id="userGoal">
-                <option value="lose">Схуднення</option>
-                <option value="muscle">М'язова маса</option>
-                <option value="endurance">Витривалість</option>
-            </select>
-            <label>Рівень підготовки</label>
-            <select id="userLevel">
-                <option value="beginner">Новачок</option>
-                <option value="middle">Середній</option>
-                <option value="pro">Просунутий</option>
-            </select>
-            <button onclick="saveProfile()">Зберегти Профіль</button>
-        </div>
-        <div id="statisticsBox" style="margin-top: 30px;">
-            <h3>Статистика Прогресу</h3>
-            <p>Кількість виконаних тренувань: <strong id="trainingsCount">0</strong></p>
-            <p>Умовна Кількість спалених калорій: <strong id="caloriesBurned">0</strong></p>
-            <p>Проведено часу на тренуваннях (хв): <strong id="timeSpent">0</strong></p>
-        </div>
-
-        <div id="theme-buttons">
-            <h3>Змінити Кольорову Тему</h3>
-            <div id="theme-buttons-container">
-                <button onclick="setTheme('default')">Стандартна</button>
-                <button onclick="setTheme('black_white')">Чорно-біла</button>
-                <button onclick="setTheme('red')">Червона</button>
-                <button onclick="setTheme('orange')">Помаранчева</button>
-                <button onclick="setTheme('yellow')">Жовта</button>
-                <button onclick="setTheme('green')">Зелена</button>
-                <button onclick="setTheme('blue')">Синя</button>
-                <button onclick="setTheme('indigo')">Фіолетовий</button>
+            <div class="form-group">
+                <label for="level">Рівень підготовки</label>
+                <select id="level">
+                    <option value="beginner">Новачок</option>
+                    <option value="middle">Середній</option>
+                    <option value="pro">Просунутий</option>
+                </select>
             </div>
-        </div>
-    </div>
+            <button type="button" onclick="generateProgram()">Згенерувати</button>
+            <article class="result-box" id="programBox" style="display:none;">
+                <h3>Згенерована програма:</h3>
+                <ul id="programList"></ul>
+                <button type="button" onclick="completeTraining()">Тренування Виконано!</button>
+                <button type="button" onclick="saveProgram()">Зберегти</button>
+            </article>
+        </section>
 
-    <div class="container" id="saved" style="display:none;">
-        <h2>Збережені програми</h2>
-        <ul id="savedPrograms"></ul>
-    </div>
+        <section class="container" id="profile" style="display:none;">
+            <h2>Мій Профіль</h2>
+            <form id="profileUpdateForm" onsubmit="event.preventDefault(); saveProfile();">
+                <div class="form-group">
+                    <label for="userName">Ваше ім'я</label>
+                    <input type="text" id="userName" required>
+                </div>
+                <div class="form-group">
+                    <label for="userAge">Вік</label>
+                    <input type="number" id="userAge" required min="14">
+                </div>
+                <div class="form-group">
+                    <label for="userWeight">Вага (кг)</label>
+                    <input type="number" id="userWeight" required>
+                </div>
+                <div class="form-group">
+                    <label for="userHeight">Зріст (см)</label>
+                    <input type="number" id="userHeight" required>
+                </div>
+                <button type="submit">Зберегти Профіль</button>
+            </form>
+
+            <aside id="statisticsBox">
+                <h3>Статистика</h3>
+                <p>Тренувань: <strong id="trainingsCount">0</strong></p>
+                <p>Калорії: <strong id="caloriesBurned">0</strong></p>
+            </aside>
+
+            <div id="theme-buttons">
+                <h3>Кольорова Тема</h3>
+                <div class="theme-grid">
+                    <button type="button" onclick="setTheme('default')">Стандартна</button>
+                    <button type="button" onclick="setTheme('black_white')">B&W</button>
+                    <button type="button" onclick="setTheme('red')">Червона</button>
+                    <button type="button" onclick="setTheme('green')">Зелена</button>
+                    <button type="button" onclick="setTheme('blue')">Синя</button>
+                </div>
+            </div>
+        </section>
+
+        <section class="container" id="saved" style="display:none;">
+            <h2>Збережені програми</h2>
+            <ul id="savedPrograms"></ul>
+        </section>
+    </main>
 
     <script src="script.js"></script>
-
 </body>
 </html>
