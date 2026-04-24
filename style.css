@@ -133,9 +133,25 @@ input:not([type="checkbox"]), select {
     top: 50%;
     transform: translateY(-50%);
     cursor: pointer;
-    color: var(--accent-color);
-    font-size: 18px;
+    color: var(--accent-color); /* Твій золотистий колір */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: none;
+    padding: 0;
     z-index: 10;
+    transition: 0.2s;
+}
+
+.toggle-password:hover {
+    opacity: 0.8;
+    color: var(--accent-color);
+}
+
+/* Стиль для батьківського елемента, щоб позиціонування працювало */
+.form-group {
+    position: relative; /* Додай це, якщо іконка вилітає за межі поля */
 }
 
 .checkbox-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 10px; }
@@ -300,4 +316,32 @@ input:not([type="checkbox"]), select {
 .btn-demo-small:hover {
     border-color: var(--accent-color) !important;
     color: var(--accent-color) !important;
+}
+/* Нова обгортка для позиціонування */
+.password-wrapper {
+    position: relative;
+    width: 100%;
+}
+
+/* Оновлений стиль іконки */
+.toggle-password {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: #888; /* Сірий колір під стиль сайту */
+    display: flex;
+    align-items: center;
+    z-index: 10;
+}
+
+/* Прибираємо старий стиль, який міг заважати */
+.form-group {
+    position: static; /* Або залиш як є, обгортка password-wrapper тепер головна */
+}
+
+.password-container {
+    position: relative;
+    width: 100%;
 }

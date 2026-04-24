@@ -19,13 +19,19 @@ function notify(msg, isError = false) {
 
 function togglePasswordVisibility(inputId) {
     const input = document.getElementById(inputId);
+    const btn = event.currentTarget; // Отримуємо саме ту кнопку, на яку натиснули
     if (!input) return;
+
+    // Код іконок (я додав клас 'eye-icon' для керування кольором через CSS)
+    const eyeIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="eye-icon"><path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"/><circle cx="12" cy="12" r="3"/></svg>`;
+    const eyeOffIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="eye-icon"><path d="M10.733 5.076a10.744 10.744 0 0 1 11.205 6.575 1 1 0 0 1 0 .696 10.747 10.747 0 0 1-1.444 2.49"/><path d="M14.084 14.158a3 3 0 0 1-4.242-4.242"/><path d="M17.479 17.499a10.75 10.75 0 0 1-15.417-5.151 1 1 0 0 1 0-.696 10.75 10.75 0 0 1 4.446-5.143"/><path d="m2 2 20 20"/></svg>`;
+
     if (input.type === "password") {
         input.type = "text";
-        event.target.textContent = "🙈";
+        btn.innerHTML = eyeOffIcon;
     } else {
         input.type = "password";
-        event.target.textContent = "👁️";
+        btn.innerHTML = eyeIcon;
     }
 }
 
@@ -63,7 +69,12 @@ function showSection(id) {
 }
 
 function handleStartClick() {
-    activeUser ? checkProfileBeforeHome() : showSection('auth');
+    if (activeUser) {
+        checkProfileBeforeHome();
+    } else {
+        showSection('auth');
+        toggleAuthForms(true); // Додаємо цей рядок: true означає "показати реєстрацію"
+    }
 }
 
 function checkProfileBeforeHome() {
@@ -326,7 +337,7 @@ function generateProgram() {
     document.getElementById('programList').innerHTML = exercises.map(ex => `
         <li class="list-item-flex">
             <span>${ex.name} — <b>${ex.reps}</b></span>
-            <button class="btn-demo" onclick="openModal('${ex.gif}', '${ex.name}')">🎥 Як робити?</button>
+            <button class="btn-demo" onclick="openModal('${ex.gif}', '${ex.name}')"> Як робити?</button>
         </li>
     `).join('');
 
@@ -417,4 +428,16 @@ function openModal(url, title) {
 
 function closeModal() {
     document.getElementById('gifModal').style.display = 'none';
+}
+
+// Викликати, коли треба саме ВХІД
+function openLogin() {
+    showSection('auth');
+    toggleAuthForms(false);
+}
+
+// Викликати, коли треба саме РЕЄСТРАЦІЮ
+function openRegister() {
+    showSection('auth');
+    toggleAuthForms(true);
 }
