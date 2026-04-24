@@ -76,24 +76,57 @@ button {
 }
 button:hover { opacity: 0.9; transform: translateY(-1px); }
 
+/* --- СПЕЦІАЛЬНА КНОПКА "ЯК РОБИТИ?" (МАЛЕНЬКА І СПРАВА) --- */
+.btn-demo {
+    width: auto !important;
+    padding: 6px 12px !important;
+    font-size: 11px !important;
+    background: transparent !important;
+    color: var(--accent-color) !important;
+    border: 1px solid var(--accent-color) !important;
+    margin-left: auto; /* Зміщує вправо всередині flex-контейнера */
+    display: inline-block;
+}
+
+.btn-demo:hover {
+    background: var(--accent-color) !important;
+    color: #000 !important;
+}
+
+/* Стиль для елемента списку, де лежить кнопка */
+#programList li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border-color);
+}
+/* -------------------------------------------------------- */
+
 .btn-main { width: auto; font-size: 16px; padding: 15px 30px; margin-top: 20px; }
 .btn-small { width: 45px; height: 45px; margin: 0; padding: 0; font-size: 20px; display: flex; justify-content: center; align-items: center; }
-.btn-small:disabled { opacity: 0.3; cursor: not-allowed; }
 
 .form-group { margin-bottom: 20px; }
 label { display: block; margin-bottom: 8px; color: var(--accent-color); font-size: 13px; font-weight: bold; }
+
 input:not([type="checkbox"]), select {
     width: 100%;
-    padding: 12px;
+    padding: 12px 15px;
     background: #000;
     border: 1px solid var(--border-color);
     color: #fff;
     border-radius: 6px;
     box-sizing: border-box;
-    padding-right: 40px !important; /* Місце для ока */
+    appearance: none;
+    -webkit-appearance: none;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23dfc89a' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 20px center;
+    background-size: 16px;
 }
 
-/* ФУНКЦІЯ ПЕРЕГЛЯДУ ПАРОЛЯ */
+#loginPassword, #regPassword { padding-right: 40px !important; background-image: none; }
+
 .toggle-password {
     position: absolute;
     right: 12px;
@@ -102,7 +135,6 @@ input:not([type="checkbox"]), select {
     cursor: pointer;
     color: var(--accent-color);
     font-size: 18px;
-    user-select: none;
     z-index: 10;
 }
 
@@ -113,42 +145,45 @@ input:not([type="checkbox"]), select {
 .switch-text { text-align: center; font-size: 13px; margin-top: 15px; }
 .switch-text a { color: var(--accent-color); text-decoration: none; font-weight: bold; }
 
-/* ЛЕНДІНГ ТА ЕЛЕМЕНТИ */
-.hero-block { text-align: center; padding: 60px 20px 40px; border-bottom: 1px solid var(--border-color); }
+.hero-block {
+    text-align: center;
+    padding: 60px 20px 40px;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
 .hero-title { font-size: 38px; color: #fff; margin-bottom: 20px; line-height: 1.3; }
 .hero-subtitle { font-size: 16px; color: #aaa; max-width: 600px; margin: 0 auto 30px auto; line-height: 1.6; }
 
-.landing-section { padding: 60px 20px; max-width: 900px; margin: 0 auto; }
+.landing-section { padding: 60px 20px; max-width: 900px; margin: 0 auto; text-align: center; }
 .bg-darker { background: rgba(8, 8, 8, 0.9) !important; border-radius: 16px; border: 1px solid #1a1a1a; margin-top: 20px; margin-bottom: 20px; backdrop-filter: blur(5px); }
 .section-heading { text-align: center; color: var(--accent-color); margin-bottom: 40px; font-size: 28px; }
 
-.grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 25px; }
+.grid-3 {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 25px;
+}
 .feature-card { background: rgba(17, 17, 17, 0.8); padding: 35px 25px; border-radius: 12px; border: 1px solid var(--border-color); text-align: center; transition: 0.3s; backdrop-filter: blur(2px); }
 .feature-card:hover { border-color: var(--accent-color); transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.5); }
 
 .feature-list-horizontal { display: flex; flex-direction: column; gap: 25px; }
 .feature-row { display: flex; align-items: flex-start; gap: 25px; background: rgba(17, 17, 17, 0.8); padding: 30px; border-radius: 12px; border: 1px solid var(--border-color); transition: 0.3s; }
 
-/* ПРОФІЛЬ ТА ВОДА */
 .profile-layout { display: grid; grid-template-columns: 2fr 1fr; gap: 30px; }
 .stats-card { background: rgba(22, 22, 22, 0.8); padding: 20px; border-radius: 10px; border: 1px solid var(--border-color); }
 .water-controls { display: flex; align-items: center; justify-content: center; gap: 15px; font-size: 24px; margin-bottom: 10px; }
 .water-progress-bg { width: 100%; height: 12px; background: #222; border-radius: 10px; margin-bottom: 15px; overflow: hidden; border: 1px solid #333; }
 .water-progress-fill { height: 100%; width: 0%; background: linear-gradient(90deg, #3b82f6, #60a5fa); transition: 0.4s ease; border-radius: 10px; }
 
-/* МОДАЛЬНЕ ВІКНО */
 .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); display: flex; justify-content: center; align-items: center; z-index: 2000; backdrop-filter: blur(5px); }
 .modal-content { background: #111; padding: 25px; border-radius: 12px; border: 1px solid var(--accent-color); width: 90%; max-width: 450px; position: relative; text-align: center; }
 .close-modal { position: absolute; top: 15px; right: 20px; font-size: 28px; color: #888; cursor: pointer; font-weight: bold; }
 #modalGif { width: 100%; border-radius: 8px; margin-top: 15px; background: #000; min-height: 200px; object-fit: cover; }
 
-/* ЗБЕРЕЖЕНІ ПЛАНИ */
-.saved-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px; margin-top: 20px; }
-.saved-card { background: rgba(26, 26, 26, 0.9); padding: 20px; border-radius: 10px; border: 1px solid #333; display: flex; flex-direction: column; }
-.btn-delete { background: #333; color: #ff4d4d; border: 1px solid #ff4d4d; margin-top: auto; }
-.btn-delete:hover { background: #ff4d4d; color: white; }
+.cta-section { text-align: center; padding: 40px 20px; }
 
-/* ДАШБОРД ФОН */
 #dashboard {
     background-image: linear-gradient(rgba(0, 0, 0, 0.9), rgba(0, 0, 0, 0.9)),
                       url('https://images.unsplash.com/photo-1581009146145-b5ef03a7403f?q=80&w=2070&auto=format&fit=crop');
@@ -157,18 +192,112 @@ input:not([type="checkbox"]), select {
     border: 1px solid var(--accent-color);
 }
 
-/* МОБІЛЬНА АДАПТАЦІЯ */
 @media (max-width: 768px) {
     header { padding: 15px 20px; flex-direction: column; gap: 15px; }
     nav ul { gap: 10px; flex-wrap: wrap; justify-content: center; }
     .container { margin: 15px; padding: 20px; }
     .profile-layout { grid-template-columns: 1fr; }
-    .grid-3, .saved-grid { grid-template-columns: 1fr; }
+    .grid-3 { grid-template-columns: 1fr; }
     .feature-row { flex-direction: column; text-align: center; }
-    .list-item-flex { flex-direction: column; align-items: flex-start; gap: 12px; }
-    .btn-demo { width: 100%; text-align: center; }
-    .toast { width: calc(100% - 40px); left: 20px; right: 20px; }
+    /* На мобільних дозволяємо кнопці переноситись, якщо назва вправи довга */
+    #programList li { flex-wrap: wrap; gap: 10px; }
+    .btn-demo { margin-left: 0; width: 100% !important; }
 }
 
 .fade-in { animation: fadeIn 0.4s ease-in; }
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+/* --- СТИЛІЗАЦІЯ ЗБЕРЕЖЕНИХ ПЛАНІВ --- */
+
+/* Контейнер для списку планів */
+#savedPlansList {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 20px;
+    padding: 0;
+    list-style: none;
+}
+
+/* Сама плашка плану */
+.plan-card {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 20px;
+    transition: 0.3s;
+    position: relative;
+}
+
+.plan-card:hover {
+    border-color: var(--accent-color);
+    background: rgba(255, 255, 255, 0.08);
+}
+
+/* Заголовок плану (Дата або Назва) */
+.plan-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    border-bottom: 1px solid #333;
+    padding-bottom: 10px;
+}
+
+.plan-date {
+    color: var(--accent-color);
+    font-weight: bold;
+    font-size: 16px;
+}
+
+/* Кнопка видалити (компактна та червона) */
+.btn-delete {
+    width: auto !important;
+    padding: 6px 12px !important;
+    background: #450a0a !important;
+    color: #ff4d4d !important;
+    border: 1px solid #7f1d1d !important;
+    font-size: 11px !important;
+    text-transform: uppercase;
+    transition: 0.2s;
+}
+
+.btn-delete:hover {
+    background: #7f1d1d !important;
+    color: #fff !important;
+}
+
+/* Вправи всередині плану */
+.plan-exercises {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.plan-exercise-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    font-size: 14px;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+
+.plan-exercise-item:last-child {
+    border-bottom: none;
+}
+
+/* Кнопка "Як зробити?" всередині збереженого плану */
+.btn-demo-small {
+    width: auto !important;
+    padding: 4px 8px !important;
+    font-size: 10px !important;
+    background: transparent !important;
+    border: 1px solid #444 !important;
+    color: #888 !important;
+    margin-left: 10px;
+}
+
+.btn-demo-small:hover {
+    border-color: var(--accent-color) !important;
+    color: var(--accent-color) !important;
+}
