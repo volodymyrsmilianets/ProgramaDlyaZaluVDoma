@@ -1,5 +1,5 @@
 // ai.js
-const GEMINI_API_KEY = "AIzaSyAysgLFA2mgF3bIKy0U_ANF-GgRl6RaQk4";
+const GEMINI_API_KEY = "API Ключ";
 
 async function getGeminiResponse(userText, userData, exercisesList) {
     const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`;
