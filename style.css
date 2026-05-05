@@ -109,6 +109,7 @@ button:hover { opacity: 0.9; transform: translateY(-1px); }
 .form-group { margin-bottom: 20px; }
 label { display: block; margin-bottom: 8px; color: var(--accent-color); font-size: 13px; font-weight: bold; }
 
+/* Загальні стилі для полів та списків */
 input:not([type="checkbox"]), select {
     width: 100%;
     padding: 12px 15px;
@@ -119,10 +120,15 @@ input:not([type="checkbox"]), select {
     box-sizing: border-box;
     appearance: none;
     -webkit-appearance: none;
+}
+
+/* Тільки для випадаючих списків (select) додаємо стрілочку */
+select {
     background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23dfc89a' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
     background-repeat: no-repeat;
     background-position: right 20px center;
     background-size: 16px;
+    padding-right: 40px; /* Місце для стрілочки */
 }
 
 #loginPassword, #regPassword { padding-right: 40px !important; background-image: none; }
@@ -170,7 +176,15 @@ input:not([type="checkbox"]), select {
     align-items: center;
 }
 .hero-title { font-size: 38px; color: #fff; margin-bottom: 20px; line-height: 1.3; }
-.hero-subtitle { font-size: 16px; color: #aaa; max-width: 600px; margin: 0 auto 30px auto; line-height: 1.6; }
+
+/* Змінений надпис "Дій" замість кнопки створити акаунт */
+.hero-subtitle {
+    font-size: 18px;
+    color: #aaa;
+    max-width: 600px;
+    margin: 0 auto 30px auto;
+    line-height: 1.6;
+}
 
 .landing-section { padding: 60px 20px; max-width: 900px; margin: 0 auto; text-align: center; }
 .bg-darker { background: rgba(8, 8, 8, 0.9) !important; border-radius: 16px; border: 1px solid #1a1a1a; margin-top: 20px; margin-bottom: 20px; backdrop-filter: blur(5px); }
@@ -192,6 +206,11 @@ input:not([type="checkbox"]), select {
 .water-controls { display: flex; align-items: center; justify-content: center; gap: 15px; font-size: 24px; margin-bottom: 10px; }
 .water-progress-bg { width: 100%; height: 12px; background: #222; border-radius: 10px; margin-bottom: 15px; overflow: hidden; border: 1px solid #333; }
 .water-progress-fill { height: 100%; width: 0%; background: linear-gradient(90deg, #3b82f6, #60a5fa); transition: 0.4s ease; border-radius: 10px; }
+
+/* ЗМІНЕНО: Колір поради у блоці води під колір акценту */
+#water-advice {
+    color: var(--accent-color) !important;
+}
 
 .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); display: flex; justify-content: center; align-items: center; z-index: 2000; backdrop-filter: blur(5px); }
 .modal-content { background: #111; padding: 25px; border-radius: 12px; border: 1px solid var(--accent-color); width: 90%; max-width: 450px; position: relative; text-align: center; }
@@ -215,7 +234,6 @@ input:not([type="checkbox"]), select {
     .profile-layout { grid-template-columns: 1fr; }
     .grid-3 { grid-template-columns: 1fr; }
     .feature-row { flex-direction: column; text-align: center; }
-    /* На мобільних дозволяємо кнопці переноситись, якщо назва вправи довга */
     #programList li { flex-wrap: wrap; gap: 10px; }
     .btn-demo { margin-left: 0; width: 100% !important; }
 }
@@ -223,9 +241,7 @@ input:not([type="checkbox"]), select {
 .fade-in { animation: fadeIn 0.4s ease-in; }
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-/* --- СТИЛІЗАЦІЯ ЗБЕРЕЖЕНИХ ПЛАНІВ --- */
-
-/* Контейнер для списку планів */
+/* --- СПИСОК ПЛАНІВ --- */
 #savedPlansList {
     display: grid;
     grid-template-columns: 1fr;
@@ -234,7 +250,6 @@ input:not([type="checkbox"]), select {
     list-style: none;
 }
 
-/* Сама плашка плану */
 .plan-card {
     background: rgba(255, 255, 255, 0.05);
     border: 1px solid var(--border-color);
@@ -249,7 +264,6 @@ input:not([type="checkbox"]), select {
     background: rgba(255, 255, 255, 0.08);
 }
 
-/* Заголовок плану (Дата або Назва) */
 .plan-header {
     display: flex;
     justify-content: space-between;
@@ -265,7 +279,6 @@ input:not([type="checkbox"]), select {
     font-size: 16px;
 }
 
-/* Кнопка видалити (компактна та червона) */
 .btn-delete {
     width: auto !important;
     padding: 6px 12px !important;
@@ -274,15 +287,8 @@ input:not([type="checkbox"]), select {
     border: 1px solid #7f1d1d !important;
     font-size: 11px !important;
     text-transform: uppercase;
-    transition: 0.2s;
 }
 
-.btn-delete:hover {
-    background: #7f1d1d !important;
-    color: #fff !important;
-}
-
-/* Вправи всередині плану */
 .plan-exercises {
     margin: 0;
     padding: 0;
@@ -298,11 +304,6 @@ input:not([type="checkbox"]), select {
     border-bottom: 1px solid rgba(255,255,255,0.05);
 }
 
-.plan-exercise-item:last-child {
-    border-bottom: none;
-}
-
-/* Кнопка "Як зробити?" всередині збереженого плану */
 .btn-demo-small {
     width: auto !important;
     padding: 4px 8px !important;
@@ -313,35 +314,126 @@ input:not([type="checkbox"]), select {
     margin-left: 10px;
 }
 
-.btn-demo-small:hover {
-    border-color: var(--accent-color) !important;
-    color: var(--accent-color) !important;
-}
-/* Нова обгортка для позиціонування */
-.password-wrapper {
-    position: relative;
-    width: 100%;
-}
+.password-wrapper { position: relative; width: 100%; }
+.password-container { position: relative; width: 100%; }
 
-/* Оновлений стиль іконки */
-.toggle-password {
-    position: absolute;
-    right: 12px;
-    top: 50%;
-    transform: translateY(-50%);
-    cursor: pointer;
-    color: #888; /* Сірий колір під стиль сайту */
+/* ЧАТ АСИСТЕНТ */
+#chat-container {
+    position: fixed;
+    bottom: 90px;
+    right: 25px;
+    width: 330px;
+    height: 450px;
+    background: #111;
+    border: 1px solid var(--border-color);
+    border-radius: 15px;
     display: flex;
+    flex-direction: column;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+    z-index: 1000;
+    overflow: hidden;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    backdrop-filter: blur(10px);
+}
+
+.chat-closed {
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(20px) scale(0.95);
+    pointer-events: none;
+}
+
+#chat-header {
+    background: #1a1a1a;
+    padding: 15px;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    justify-content: space-between;
     align-items: center;
-    z-index: 10;
 }
 
-/* Прибираємо старий стиль, який міг заважати */
-.form-group {
-    position: static; /* Або залиш як є, обгортка password-wrapper тепер головна */
+#chat-header span {
+    color: var(--accent-color);
+    font-size: 11px;
+    font-weight: bold;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
 }
 
-.password-container {
-    position: relative;
-    width: 100%;
+#close-chat {
+    background: transparent !important;
+    border: none !important;
+    color: #666 !important;
+    font-size: 18px !important;
+    cursor: pointer;
+    width: auto !important;
+    padding: 0 !important;
+}
+
+#chat-messages {
+    flex: 1;
+    padding: 15px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.user-msg {
+    align-self: flex-end;
+    background: var(--accent-color);
+    color: #000;
+    padding: 10px 14px;
+    border-radius: 12px;
+    font-size: 13px;
+}
+
+.bot-msg {
+    align-self: flex-start;
+    background: #222;
+    color: var(--accent-color);
+    padding: 10px 14px;
+    border-radius: 12px;
+    border: 1px solid rgba(223, 200, 154, 0.2);
+    font-size: 13px;
+}
+
+#chat-input-area {
+    padding: 15px;
+    background: #161616;
+    border-top: 1px solid var(--border-color);
+    display: flex;
+    gap: 8px;
+}
+
+#user-query {
+    flex: 1;
+    background: #000 !important;
+    border: 1px solid #333 !important;
+    color: #fff !important;
+    padding: 8px 12px !important;
+    font-size: 13px !important;
+}
+
+#send-btn {
+    width: 40px !important;
+    height: 35px !important;
+    background: var(--accent-color) !important;
+    border: none !important;
+}
+
+#chat-trigger {
+    display: none;
+    position: fixed;
+    bottom: 25px;
+    right: 25px;
+    width: auto;
+    padding: 12px 20px;
+    border-radius: 50px;
+    background: var(--accent-color);
+    color: #000;
+    z-index: 999;
+    font-size: 14px;
+    border: none;
+    cursor: pointer;
 }

@@ -1,12 +1,576 @@
 let activeUser = localStorage.getItem('activeUser') || null;
 let currentGeneratedPlan = null;
 
+// --- БЛОК ІНТЕЛЕКТУАЛЬНОГО АСИСТЕНТА (ШІ) ---
+const botKnowledge = [
+    // ПРИВІТАННЯ ТА ХТО Я
+    {
+        keywords: ["привіт", "вітаю", "добри", "хай", "хто ти", "допомог"],
+        answers: [
+            "Привіт! Я твоя підтримка у світі фітнесу. Питання про м'язи, харчування чи вправи? Я тут!",
+            "Вітаю! Я TRpoint AI. Можу скласти пораду щодо тренувань або пояснити, як замінити гантелі вдома.",
+            "Привіт! Готовий ставати кращим? Запитуй що завгодно про спорт!"
+        ]
+    },
+
+    // --- РОЗШИРЕНИЙ БЛОК: ТРАВМИ, БОЛІ ТА ДИСКОМФОРТ ---
+    {
+        keywords: ["колін", "суглоб", "хруст", "меніск", "чашечк"],
+        answers: [
+            "При болях у колінах прибери стрибки та глибокі присідання. Перевір, чи не виходять коліна за носки. Якщо біль гострий — негайно до лікаря!",
+            "Хрускіт без болю — зазвичай норма, але якщо супроводжується набряком, краще дати відпочинок на 3-4 дні."
+        ]
+    },
+    {
+        keywords: ["спин", "поперек", "хребет", "гриж", "протруз", "лопатк"],
+        answers: [
+            "Біль у попереку? Скоріш за все, ти перевантажуєш його замість пресу або ніг. Тримай 'нейтральну спину' і не роби різких нахилів з вагою.",
+            "Якщо болить між лопатками, зверни увагу на розминку грудного відділу. Твоя спина має бути рівною, як струна."
+        ]
+    },
+    {
+        keywords: ["плеч", "плечо", "ключиц", "манжет"],
+        answers: [
+            "Плечі — найрухливіші суглоби. Якщо болить при жимі — зменш амплітуду або заміни штангу на гантелі (паралельний хват).",
+            "Обов'язково розігрівай ротаторну манжету плеча перед будь-яким тренуванням верху тіла!"
+        ]
+    },
+    {
+        keywords: ["лікот", "лікт", "епіконд"],
+        answers: [
+            "Біль у ліктях часто виникає через 'лікоть тенісиста' або занадто вузький хват. Спробуй не випрямляти руки до кінця (не 'вставляй' суглоб у замок)."
+        ]
+    },
+    {
+        keywords: ["зап'яст", "кист", "руки болять", "пальц"],
+        answers: [
+            "При болях у зап'ястях під час упорів на підлогу спробуй робити вправи на кулаках або використовуй спеціальні упори. Це зніме зайвий злам у суглобі.", // Прибрали "віджиман"
+            "Часто зап'ястя болять через слабкість передпліч. Додай вправи на хват у кінці тренування."
+        ]
+    },
+    {
+        keywords: ["стоп", "п'ят", "гомілк", "ахіл"],
+        answers: [
+            "Біль у стопі може бути через погане взуття. Не тренуйся в кедах з плоскою підошвою, якщо робиш велику вагу або багато стрибаєш."
+        ]
+    },
+    {
+        keywords: ["судом", "зводить", "тягне"],
+        answers: [
+            "М'язи зводить? Можливо, не вистачає магнію, калію або ти п'єш замало води. Спробуй додати мінеральну воду в раціон та добре розтягуйся."
+        ]
+    },
+    {
+        keywords: ["шиї", "шия", "потилиц"],
+        answers: [
+            "Біль у шиї при тренуванні пресу каже про те, що ти тягнеш голову руками. Погляд має бути спрямований у стелю, а між підборіддям і грудьми має проходити кулак."
+        ]
+    },
+    {
+        keywords: ["кріпатур", "м'яз", "після тренуван", "ниє"],
+        answers: [
+            "Кріпатура — це ознака мікротравм, які змушують м'язи рости. Допоможе тепла ванна, легка активність (ходьба) та сон.",
+            "Якщо м'язи болять так, що не можеш рухатись — ти перетренувався. Наступного разу зменш кількість підходів на 30%."
+        ]
+    },
+
+    // --- РОЗШИРЕНИЙ БЛОК: ДОМАШНІ ТРЕНУВАННЯ ТА ЛАЙФХАКИ ---
+    {
+        keywords: ["вдома", "дома", "квартир", "кімнат"],
+        answers: [
+            "Для крутого тренування вдома достатньо 2х2 метри простору. Твоя вага — це найкращий інвентар!",
+            "Тренування вдома економлять час. Головне — прибрати все, що заважає, і виставити таймер."
+        ]
+    },
+    {
+        keywords: ["замінити гантел", "немає гантел", "пляшк", "баклаж"],
+        answers: [
+            "Замість гантелей бери пляшки з водою: 0.5л = 0.5кг, 2л = 2кг. Хочеш важче? Насип у них пісок або крупу.",
+            "Для великої ваги (як штанга) візьми 5-літрові баклажки або рюкзак, набитий книгами."
+        ]
+    },
+    {
+        keywords: ["замінити лаву", "стільц", "диван", "табурет"],
+        answers: [
+            "Замість лави для жиму чи розведень рук використовуй два стійких стільця (без спинок) або край дивану.",
+            "Для вправ на трицепс в упорі ззаду диван або низьке крісло — ідеальний варіант." // Прибрали "віджиман"
+        ]
+    },
+    {
+        keywords: ["турнік", "підтягуван", "двері", "одвірок"],
+        answers: [
+            "Немає турніка? Можна робити 'тягу рушника', лежачи на животі, або підтягуватися на міцному столі.",
+            "Можна підтягуватися на верхньому краї міцних дверей, підклавши під них щось для фіксації."
+        ]
+    },
+    {
+        keywords: ["килимок", "підлог", "каремат", "ковдр", "рушник"],
+        answers: [
+            "Немає каремата? Склади звичайну ковдру у 2-3 рази або поклади товстий рушник, щоб не було боляче колінам."
+        ]
+    },
+    {
+        keywords: ["гумк", "еспандер", "резинк"],
+        answers: [
+            "Фітнес-гумки — це 'кишеньковий зал'. Вони замінюють більшість тренажерів. Якщо немає — використовуй еластичний бинт."
+        ]
+    },
+    {
+        keywords: ["скакалк", "кардіо вдома", "стрибат"],
+        answers: [
+            "Немає скакалки? Роби 'імітацію скакалки' або вправу 'джампінг джек'. Біг на місці теж чудово працює."
+        ]
+    },
+    {
+        keywords: ["обтяжувач", "рюкзак", "книг"],
+        answers: [
+            "Рюкзак — це найкращий домашній обтяжувач. Поклади туди книги або пляшки з водою і роби присідання."
+        ]
+    },
+    {
+        keywords: ["підтягуван", "тяга", "рушник"],
+        answers: [
+            "Візьми звичайний рушник, зачепи його за ручку дверей — і ти зможеш робити тягу під нахилом."
+        ]
+    },
+
+    // ЗАЛ ТА ТРЕНАЖЕРИ
+    {
+        keywords: ["зал", "фітнес", "тренажерк", "абонемент"],
+        answers: [
+            "Перший раз у залі? Почни з кардіо (10 хв), щоб оглянутись. Не бійся запитувати чергового тренера про інвентар.",
+            "У залі головне — регулярність. Навіть якщо немає настрою, просто прийди і зроби хоча б розминку."
+        ]
+    },
+    {
+        keywords: ["штанг", "гриф", "блін", "замок", "стійк"],
+        answers: [
+            "Стандартний олімпійський гриф важить 20 кг. Завжди використовуй замки на штанзі!",
+            "Якщо береш велику вагу на штангу — обов'язково попроси когось тебе підстрахувати."
+        ]
+    },
+    {
+        keywords: ["зайнято", "черга", "замінити тренажер"],
+        answers: [
+            "Тренажер зайнятий? Запропонуй робити по черзі. Більшість тренажерів можна замінити вільними вагами (гантелями).",
+            "Жим у Хаммері можна замінити жимом гантелей лежачи, якщо тренажер зайнятий."
+        ]
+    },
+    {
+        keywords: ["гантел", "ряд", "важк", "легк"],
+        answers: [
+            "Гантельний ряд — це твоя база. Завжди клади гантелі на місце після себе. Це етикет залу!",
+            "Обирай вагу гантелей так, щоб останні 2 повторення в підході були важкими, але технічними."
+        ]
+    },
+    {
+        keywords: ["кросовер", "блок", "тяг", "трос"],
+        answers: [
+            "Кросовер — універсальний тренажер. На ньому можна опрацювати все тіло: від грудей до пресу.",
+            "Працюючи на блоках, не дозволяй вазі різко падати вниз. Контролюй рух."
+        ]
+    },
+    {
+        keywords: ["доріжк", "біг", "еліпс", "вело", "степ"],
+        answers: [
+            "Кардіо-тренажери ідеальні для розминки (5-10 хв) або для спалювання жиру після силового тренування.",
+            "Не тримайся руками за поручні бігової доріжки — так ти спалюєш менше калорій."
+        ]
+    },
+    {
+        keywords: ["ваг", "скільки ставити", "прогрес"],
+        answers: [
+            "Принцип прогресії: намагайся щотижня додавати хоча б трохи ваги або робити на 1 повторення більше.",
+            "Не намагайся підняти все і відразу. Техніка понад усе."
+        ]
+    },
+    {
+        keywords: ["страх", "стидно", "дивляться", "перший раз"],
+        answers: [
+            "Повір, у залі всі дивляться тільки на себе в дзеркало. Всі колись починали з нуля!",
+            "Одягни навушники з улюбленою музикою — це допоможе зосередитись."
+        ]
+    },
+    {
+        keywords: ["рушник", "гігієн", "піт", "футболк"],
+        answers: [
+            "Брати рушник у зал — це база. Стели його на лаву, поважай інших атлетів!"
+        ]
+    },
+
+    // --- РОЗШИРЕНИЙ БЛОК: ХАРЧУВАННЯ, ДІЄТИ ТА СПОРТИВНІ ДОБАВКИ ---
+    {
+        keywords: ["їст", "харчува", "дієт", "калорій", "меню", "рецепт"],
+        answers: [
+            "Базове правило: витрачай більше калорій, ніж споживаєш — і ти схуднеш.",
+            "Прибери 'рідкі калорії' (солодкі напої) — це вже дасть результат.",
+            "Намагайся їсти 3-4 рази на день невеликими порціями."
+        ]
+    },
+    {
+        keywords: ["білок", "білк", "протеїн", "курк", "яйц", "сир", "м'яс"],
+        answers: [
+            "Білок — будівельний матеріал для м'язів. Норма: 1.5–2 г на 1 кг ваги.",
+            "Протеїновий коктейль зручний, але не замінить звичайну їжу."
+        ]
+    },
+    {
+        keywords: ["вуглев", "каш", "макарон", "рис", "греч", "енергія"],
+        answers: [
+            "Вуглеводи — твоє пальне. Обирай складні: гречку, рис, макарони твердих сортів.",
+            "Не бійся вуглеводів! Без них не буде сил на важкі тренування."
+        ]
+    },
+    {
+        keywords: ["жир", "олій", "горіх", "авокад"],
+        answers: [
+            "Жири важливі для гормонів! Додавай горіхи, оливкову олію, авокадо.",
+            "Уникай трансжирів (фастфуд), але не виключай корисні жири."
+        ]
+    },
+    {
+        keywords: ["до тренуван", "перед тренуван", "їсти до"],
+        answers: [
+            "Ідеально поїсти за 1.5–2 години до залу: складні вуглеводи + білок.",
+            "Якщо до тренування 30 хвилин — з'їж банан."
+        ]
+    },
+    {
+        keywords: ["після тренуван", "їсти після", "вікно"],
+        answers: [
+            "Після тренування потрібен білок і вуглеводи. Поїж протягом години-півтори.",
+            "Затягувати з їжею після залу не варто, організму потрібні ресурси."
+        ]
+    },
+    {
+        keywords: ["креатин", "сила", "памп"],
+        answers: [
+            "Креатин дає силу та робить м'язи більшими за рахунок води. Пий 5 г щодня.",
+            "Креатин працює накопичувально, пий його і в дні відпочинку."
+        ]
+    },
+    {
+        keywords: ["вітамін", "омега", "магній", "цинк"],
+        answers: [
+            "Омега-3 корисна для суглобів, магній — від судом. Але краще здай аналізи!",
+            "Мультивітаміни корисні при інтенсивних навантаженнях."
+        ]
+    },
+    {
+        keywords: ["солодк", "цукор", "тортик", "читміл", "зірвався"],
+        answers: [
+            "Читміл допомагає психологічно. З'їж свій бургер і тренуйся далі!",
+            "Замінюй солодощі фруктами або протеїновими батончиками."
+        ]
+    },
+    {
+        keywords: ["ніч", "на ніч", "перед сном", "їсти ввечері"],
+        answers: [
+            "Їсти на ніч можна, якщо це вписується в норму. Кращий вибір — білок з овочами.",
+            "Вуглеводи після 18:00 не стають жиром автоматично. Важлива добова калорійність."
+        ]
+    },
+
+    // --- РОЗШИРЕНИЙ БЛОК: РЕЖИМ, СОН ТА ВІДНОВЛЕННЯ ---
+    {
+        keywords: ["сон", "спати", "ніч", "недосип"],
+        answers: [
+            "Сон — головний анаболік. Тобі потрібно 7-9 годин якісного сну.",
+            "Намагайся лягати до 23:00 для оптимального гормонального фону."
+        ]
+    },
+    {
+        keywords: ["відновлен", "відпочинок", "пауз", "вихідн"],
+        answers: [
+            "М'язи ростуть, коли ти відпочиваєш. Роби 1-2 повних дні відпочинку на тиждень.",
+            "Активне відновлення (прогулянка, плавання) допомагає м'язам швидше."
+        ]
+    },
+    {
+        keywords: ["перетренован", "втом", "сил немає", "не хочу", "апатія"],
+        answers: [
+            "Симптоми перетренованості: поганий сон, дратівливість, зупинка прогресу. Візьми тиждень легких тренувань (делоад).",
+            "Іноді 'менше' означає 'більше' для результату. Дай ЦНС відпочити."
+        ]
+    },
+    {
+        keywords: ["гаряча ванн", "лазня", "саун", "душ", "масаж"],
+        answers: [
+            "Сауна та гаряча ванна покращують кровообіг. Масаж знімає затискачі.",
+            "Контрастний душ чудово бадьорить судини після тренування."
+        ]
+    },
+    {
+        keywords: ["розтяжк", "стретчинг", "йог", "гнучк"],
+        answers: [
+            "Розтяжка після тренування покращує еластичність м'язів і знижує ризик травм.",
+            "Йога в дні відпочинку допомагає покращити поставу."
+        ]
+    },
+    {
+        keywords: ["щодня", "кожен день", "частота"],
+        answers: [
+            "Тренуватися щодня — погана ідея для новачків. М'язам потрібно час.",
+            "Кращий графік — 3-4 тренування на тиждень."
+        ]
+    },
+    {
+        keywords: ["стрес", "нерв", "робот", "психолог"],
+        answers: [
+            "Психологічний стрес виснажує так само, як і штанга. Кортизол руйнує м'язи.",
+            "Використовуй спорт як розрядку, а не як додатковий стрес."
+        ]
+    },
+
+    // --- РОЗШИРЕНИЙ БЛОК: МОТИВАЦІЯ ТА ПСИХОЛОГІЯ УСПІХУ ---
+    {
+        keywords: ["лін", "не хочу", "немає сил", "ліньки", "не можу", "важко"],
+        answers: [
+            "Спробуй 'правило 5 хвилин': потренуйся лише 5 хвилин. Зазвичай втягуєшся!",
+            "Лінь — це часто просто втома. Розбий тренування на маленькі частини.",
+            "Найважче — одягнути кросівки. Далі буде легше!"
+        ]
+    },
+    {
+        keywords: ["мотивац", "надих", "стимул", "навіщо"],
+        answers: [
+            "Мотивація допомагае почати. Дисципліна змушує продовжувати.",
+            "Твій результат через рік залежить від того, що ти зробиш сьогодні.",
+            "Твоє тіло — єдине місце, де тобі доведеться жити. Зроби його сильним!"
+        ]
+    },
+    {
+        keywords: ["результат", "не бачу змін", "коли буде", "вага стоїть", "плато"],
+        answers: [
+            "Перші зміни ти побачиш через 4 тижні регулярності. Не здавайся!",
+            "Вага може стояти через ріст м'язів. Орієнтуйся на заміри та дзеркало.",
+            "Якщо прогрес зупинився — зміни вправи або додай трохи кардіо."
+        ]
+    },
+    {
+        keywords: ["кинут", "здаюсь", "набридло", "вигоран"],
+        answers: [
+            "Якщо ти втомився — навчися відпочивати, а не кидати.",
+            "Згадай, чому ти почав. Ти вже пройшов більше, ніж ті, хто не спробував."
+        ]
+    },
+    {
+        keywords: ["звичк", "режим", "система"],
+        answers: [
+            "Зроби спорт частиною рутини, як чищення зубів. Постійність — ключ до успіху.",
+            "Краще 20 хвилин, але регулярно, ніж 2 години один раз на місяць."
+        ]
+    },
+    {
+        keywords: ["сором", "дивляться", "не вмію", "смішно"],
+        answers: [
+            "Поважай свій шлях. Ти прийшов працювати над собою, а не оцінювати інших.",
+            "Люди в залі зайняті собою, ніхто не буде сміятися."
+        ]
+    },
+    {
+        keywords: ["успіх", "ціль", "мрія", "вогонь"],
+        answers: [
+            "Став маленькі досяжні цілі. Маленькі перемоги ведуть до великих результатів!",
+            "Пишайся кожним виконаним підходом."
+        ]
+    },
+
+    // --- РОЗШИРЕНИЙ БЛОК: М'ЯЗИ ТА КОНКРЕТНІ ВПРАВИ ---
+    {
+        keywords: ["груди", "грудн", "жим"], // ОЧИЩЕНО ВІД "віджиман"
+        answers: [
+            "Найкращі вправи на груди: жим штанги чи гантелей. Для верху роби жим під нахилом.",
+            "Хочеш широкі грудні? Додай розведення гантелей або кросовер."
+        ]
+    },
+    {
+        keywords: ["спин", "широчайш", "підтягуван", "тяг"],
+        answers: [
+            "Для ширини спини роби підтягування, для товщини — тягу штанги в нахилі.",
+            "Не тягни вагу руками, тягни ліктями назад. Працюй спиною."
+        ]
+    },
+    {
+        keywords: ["рук", "біцепс", "тріцепс", "брахіаліс"], // ОЧИЩЕНО ВІД "віджиман"
+        answers: [
+            "Тріцепс складає 60% об'єму руки. Спробуй вправи на брусах.",
+            "Для біцепса найкраще — згинання рук. Не розгойдуйся корпусом!"
+        ]
+    },
+    {
+        keywords: ["прес", "живіт", "кубик", "боки", "талія"],
+        answers: [
+            "Прес любить багато повторень та статику (планка). Кубики з'являються, коли знижується відсоток жиру.",
+            "Роби підйоми ніг для нижнього пресу та скручування для верхнього."
+        ]
+    },
+    {
+        keywords: ["ног", "ноги", "квадріцепс", "стегн", "литк"],
+        answers: [
+            "База для ніг — це присідання та випади. Виконуй їх технічно.",
+            "Не забувай про литки! Підйоми на носки можна робити всюди."
+        ]
+    },
+    {
+        keywords: ["сідниц", "ягодиц", "поп", "жоп"],
+        answers: [
+            "Найкращі вправи: сідничний місток, глибокі присідання та румунська тяга.",
+            "Випади назад — чудовий спосіб 'підняти' сідниці."
+        ]
+    },
+    {
+        keywords: ["плеч", "дельт", "плечі"],
+        answers: [
+            "Плечі складаються з 3 пучків. Роби жими та махи гантелей.",
+            "Широкі плечі роблять талію візуально вужчою."
+        ]
+    },
+    {
+        keywords: ["постав", "сутул", "рівна спина"],
+        answers: [
+            "Сутулишся? Зміцнюй м'язи спини та розтягуй грудні м'язи."
+        ]
+    },
+    {
+        keywords: ["кардіо", "біг", "худнути", "стрибк"],
+        answers: [
+            "Кардіо краще робити після силового тренування або окремим днем.",
+            "Інтервальний біг або швидка ходьба під гору дуже ефективні."
+        ]
+    },
+
+    // --- БЛОК НЕ ПО ТЕМІ ---
+    {
+        keywords: ["погода", "політик", "новин", "грати", "ігр", "фільм", "музик", "купити", "грош", "президент"],
+        answers: [
+            "Це цікаво, але я краще розуміюся на кількості підходів. Обговоримо тренування?",
+            "Моя база знань зосереджена на спорті. Давай краще про прес!",
+            "Algorithm on: спалювання жиру. Давай про розминку?",
+            "Поки всі обговорюють новини, ми зробимо ще підхід. Що скажеш?"
+        ]
+    }
+];
+
 document.addEventListener('DOMContentLoaded', () => {
     updateUI();
     goHome();
+
+    // Ініціалізація чату
+    const trigger = document.getElementById('chat-trigger');
+    const closeBtn = document.getElementById('close-chat');
+    const sendBtn = document.getElementById('send-btn');
+    const input = document.getElementById('user-query');
+    const chatContainer = document.getElementById('chat-container');
+
+    if (trigger) {
+        trigger.onclick = () => {
+            chatContainer.classList.toggle('chat-closed');
+            if (!chatContainer.classList.contains('chat-closed')) {
+                input.focus();
+            }
+        };
+    }
+
+    if (closeBtn) {
+        closeBtn.onclick = () => chatContainer.classList.add('chat-closed');
+    }
+
+    if (sendBtn) sendBtn.onclick = sendMessage;
+
+    if (input) {
+        input.onkeypress = (e) => { if(e.key === 'Enter') sendMessage(); };
+    }
 });
 
-// --- 1. СИСТЕМНІ ПОВІДОМЛЕННЯ ТА ДОПОМІЖНІ ФУНКЦІЇ ---
+function sendMessage() {
+    const input = document.getElementById('user-query');
+    const messages = document.getElementById('chat-messages');
+    const userText = input.value.trim();
+
+    // Перевірка наявності користувача та тексту
+    if (!userText || !activeUser) return;
+
+    const users = JSON.parse(localStorage.getItem('users')) || {};
+    const user = users[activeUser];
+    const profile = user.profile || {};
+
+    // Виводимо повідомлення користувача в чат
+    messages.innerHTML += `<div class="msg user-msg">${userText}</div>`;
+
+    const lowerText = userText.toLowerCase();
+    let response = "";
+    let actionAfterMsg = null;
+
+    // --- 1. ПЕРСОНАЛІЗОВАНІ ЗАПИТИ (ІМТ, ВОДА, ІМ'Я) ---
+    if (lowerText.includes("імт") || lowerText.includes("індекс маси")) {
+        if (profile.weight && profile.height) {
+            const bmi = profile.weight / ((profile.height / 100) ** 2);
+            let status = bmi < 18.5 ? "недостатня вага" : bmi < 25 ? "норма" : bmi < 30 ? "надлишкова вага" : "ожиріння";
+            response = `Твій ІМТ: **${bmi.toFixed(1)}** (${status}). ${bmi > 25 ? "Раджу додати більше кардіо." : "Все супер, тримай темп!"}`;
+        } else {
+            response = "Мені потрібні твої зріст та вага для розрахунку. Онови їх у профілі!";
+        }
+    }
+    else if (lowerText.includes("вод") && (lowerText.includes("норм") || lowerText.includes("скільки"))) {
+        const waterNorm = (profile.weight * 35) / 1000 || 2.5;
+        response = `${profile.name || 'Друже'}, твоя норма: **${waterNorm.toFixed(1)} л**. Ти випив **${user.water || 0}** склянок сьогодні.`;
+    }
+
+    // --- 2. ПОШУК ВПРАВИ (GIF) - ПРІОРІТЕТ НАД БАЗОЮ ЗНАНЬ ---
+    if (!response) {
+        // Шукаємо ключ у об'єкті exerciseGifs
+        const exerciseKey = Object.keys(exerciseGifs).find(name => {
+            const cleanName = name.toLowerCase();
+            // Перевіряємо, чи є назва вправи в тексті (напр. "віджимання")
+            return lowerText.includes(cleanName.split(' ')[0]);
+        });
+
+        if (exerciseKey) {
+            response = `Ось техніка вправи **${exerciseKey}**. Виконуй плавно та без поспіху!`;
+            actionAfterMsg = () => openModal(exerciseGifs[exerciseKey], exerciseKey);
+        }
+    }
+
+    // --- 3. ЗАГАЛЬНА БАЗА ЗНАНЬ ---
+    if (!response) {
+        const found = botKnowledge.find(item =>
+            item.keywords.some(k => lowerText.includes(k))
+        );
+
+        if (found) {
+            response = found.answers[Math.floor(Math.random() * found.answers.length)];
+        }
+    }
+
+    // --- 4. FALLBACK (ЯКЩО НІЧОГО НЕ ПІДІЙШЛО) ---
+    if (!response) {
+        const fallbacks = [
+            "Я — твій фітнес-асистент. Запитай мене про вправи, ІМТ або харчування!",
+            "Цікаво, але давай краще про тренування. Може, показати як робити віджимання?",
+            "Не впевнений, що зрозумів. Спробуй уточнити запит щодо спорту."
+        ];
+        response = fallbacks[Math.floor(Math.random() * fallbacks.length)];
+    }
+
+    // Очищення поля та скрол
+    input.value = '';
+    messages.scrollTop = messages.scrollHeight;
+
+    // Відповідь бота з невеликою затримкою
+    setTimeout(() => {
+        messages.innerHTML += `<div class="msg bot-msg">${response}</div>`;
+        messages.scrollTop = messages.scrollHeight;
+
+        // Виклик модалки, якщо була знайдена вправа
+        if (actionAfterMsg) {
+            setTimeout(actionAfterMsg, 600);
+        }
+    }, 500);
+}
+
+// --- РЕШТА ФУНКЦІЙ (БЕЗ ЗМІН) ---
+
 function notify(msg, isError = false) {
     const t = document.getElementById('toast');
     if (!t) return;
@@ -19,10 +583,9 @@ function notify(msg, isError = false) {
 
 function togglePasswordVisibility(inputId) {
     const input = document.getElementById(inputId);
-    const btn = event.currentTarget; // Отримуємо саме ту кнопку, на яку натиснули
+    const btn = event.currentTarget;
     if (!input) return;
 
-    // Код іконок (я додав клас 'eye-icon' для керування кольором через CSS)
     const eyeIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="eye-icon"><path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"/><circle cx="12" cy="12" r="3"/></svg>`;
     const eyeOffIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="eye-icon"><path d="M10.733 5.076a10.744 10.744 0 0 1 11.205 6.575 1 1 0 0 1 0 .696 10.747 10.747 0 0 1-1.444 2.49"/><path d="M14.084 14.158a3 3 0 0 1-4.242-4.242"/><path d="M17.479 17.499a10.75 10.75 0 0 1-15.417-5.151 1 1 0 0 1 0-.696 10.75 10.75 0 0 1 4.446-5.143"/><path d="m2 2 20 20"/></svg>`;
 
@@ -56,16 +619,25 @@ function goHome() {
     activeUser ? showSection('dashboard') : showSection('about');
 }
 
-function showSection(id) {
+function showSection(sectionId) {
     const ids = ['about', 'auth', 'profile', 'home', 'saved', 'dashboard'];
+
+    // 1. Перемикаємо видимість секцій
     ids.forEach(x => {
         const el = document.getElementById(x);
-        if(el) el.style.display = (x === id ? 'block' : 'none');
+        if (el) {
+            // Виправлено: використовуємо sectionId замість id
+            el.style.display = (x === sectionId ? 'block' : 'none');
+        }
     });
 
-    if (id === 'profile') loadProfile();
-    if (id === 'saved') renderSaved();
-    if (id === 'dashboard') updateDashboardUI();
+    // 3. Запуск специфічних функцій для кожної секції
+    if (sectionId === 'profile') loadProfile();
+    if (sectionId === 'saved') renderSaved();
+    if (sectionId === 'dashboard') updateDashboardUI();
+
+    // Прокрутка вгору при зміні сторінки (корисно для мобільних)
+    window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 function handleStartClick() {
@@ -73,12 +645,15 @@ function handleStartClick() {
         checkProfileBeforeHome();
     } else {
         showSection('auth');
-        toggleAuthForms(true); // Додаємо цей рядок: true означає "показати реєстрацію"
+        toggleAuthForms(true);
     }
 }
 
 function checkProfileBeforeHome() {
-    let user = JSON.parse(localStorage.getItem('users'))[activeUser];
+    let usersStr = localStorage.getItem('users');
+    if (!usersStr) return;
+    let users = JSON.parse(usersStr);
+    let user = users[activeUser];
     if (!user.profile?.name) {
         notify("Спочатку заповніть профіль!", true);
         showSection('profile');
@@ -98,9 +673,11 @@ function loginUser() {
         activeUser = email;
         localStorage.setItem('activeUser', email);
         clearAllForms();
-        updateUI();
+        updateUI(); // Цей рядок тепер увімкне чат
         goHome();
-    } else { notify("Невірний логін або пароль!", true); }
+    } else {
+        notify("Невірний логін або пароль!", true);
+    }
 }
 
 function registerUser() {
@@ -131,14 +708,27 @@ function registerUser() {
 function logout() {
     localStorage.removeItem('activeUser');
     activeUser = null;
+
+    // Ховаємо саме вікно чату, якщо воно було відкрите
+    const chatContainer = document.getElementById('chat-container');
+    if (chatContainer) chatContainer.classList.add('chat-closed');
+
     clearAllForms();
-    updateUI();
-    goHome();
+    updateUI(); // Цей рядок тепер приховає кнопку чату
+    showSection('about'); // Повертаємо на головну
 }
 
-function toggleAuthForms(reg) {
-    document.getElementById('loginBox').style.display = reg ? 'none' : 'block';
-    document.getElementById('registerBox').style.display = reg ? 'block' : 'none';
+function toggleAuthForms(isRegister) {
+    const loginBox = document.getElementById('loginBox');
+    const registerBox = document.getElementById('registerBox');
+
+    if (isRegister) {
+        loginBox.style.display = 'none';
+        registerBox.style.display = 'block';
+    } else {
+        loginBox.style.display = 'block';
+        registerBox.style.display = 'none';
+    }
 }
 
 // --- 4. ПРОФІЛЬ ТА ВОДА ---
@@ -172,29 +762,63 @@ function loadProfile() {
     syncWaterUI(user.water || 0);
 }
 
-function updateWater(v) {
-    if (!activeUser) return;
-    let users = JSON.parse(localStorage.getItem('users')) || {};
-    let user = users[activeUser];
+function updateWater(change) {
+    const users = JSON.parse(localStorage.getItem('users')) || {};
+    if (!activeUser || !users[activeUser]) return;
 
-    let today = new Date().toDateString();
-    if (user.waterDate !== today) {
-        user.water = 0;
-        user.waterDate = today;
-    }
+    const user = users[activeUser];
+    if (user.water === undefined) user.water = 0;
 
-    let current = parseInt(user.water) || 0;
-    if (v > 0 && current >= 8) {
-        notify("Денну норму (8 склянок) виконано! 🌊");
-        return;
-    }
+    // Обмеження від 0 до 8
+    user.water = Math.max(0, Math.min(8, user.water + change));
 
-    user.water = Math.max(0, current + v);
-    users[activeUser] = user;
     localStorage.setItem('users', JSON.stringify(users));
 
-    syncWaterUI(user.water);
-    if (user.water === 8 && v > 0) notify("Супер! Норма води виконана!");
+    const countEl = document.getElementById('waterCount');
+    const progressEl = document.getElementById('waterProgressBar');
+    const adviceEl = document.getElementById('water-advice');
+    const dashCountEl = document.getElementById('dashWaterCount');
+    const dashBarEl = document.getElementById('dashWaterBar');
+
+    const percent = (user.water / 8) * 100;
+
+    // ВИЗНАЧЕННЯ КОЛЬОРУ СМУЖКИ
+    // Якщо 8 склянок — зелений (#2ecc71), якщо менше — синій (#00d2ff або твій акцент)
+    const barColor = user.water >= 8 ? "#2ecc71" : "#00d2ff";
+
+    // Оновлення цифр
+    if (countEl) countEl.innerText = user.water;
+    if (dashCountEl) dashCountEl.innerText = user.water;
+
+    // Оновлення смужок (ширина та колір)
+    if (progressEl) {
+        progressEl.style.width = percent + '%';
+        progressEl.style.backgroundColor = barColor;
+    }
+    if (dashBarEl) {
+        dashBarEl.style.width = percent + '%';
+        dashBarEl.style.backgroundColor = barColor;
+    }
+
+    // НАЛАШТУВАННЯ НАДПИСІВ
+    if (adviceEl) {
+        // Колір надпису завжди золотий (як кнопки + та -)
+        adviceEl.style.color = "#ffd700";
+        adviceEl.style.fontWeight = "bold"; // Щоб краще читалися на темному фоні
+
+        let adviceText = "";
+        if (user.water === 0) {
+            adviceText = "Час випити першу склянку води!";
+        } else if (user.water < 4) {
+            adviceText = "Вода прискорює метаболізм та дає енергію.";
+        } else if (user.water < 8) {
+            adviceText = "Ти на правильному шляху до мети!";
+        } else {
+            adviceText = "Ви досягли норми! Твій організм працює як годинник.";
+        }
+
+        adviceEl.innerText = adviceText;
+    }
 }
 
 function syncWaterUI(amount) {
@@ -222,7 +846,7 @@ function toggleSplit() {
     if(sg) sg.style.display = (g === 'muscle' ? 'block' : 'none');
 }
 
-// 1. Словник посилань на ГІФки (просто додавай сюди нові)
+// Тут твій великий масив exerciseGifs залишається без змін (скоротив для читання відповіді)
 const exerciseGifs = {
     "Віджимання від підлоги": "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExejFsb2k0djAxNzkyYnYwenJkdTU0ZjFuMDd3OXY3OTdrbXJvajV4ayZlcD12MV9naWZzX3JlbGF0ZWQmY3Q9Zw/SX9pF45td2gIniqSBm/giphy.gif",
     "Широкі віджимання": "https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExcmFub21hN3p2bDhzYTFycjhlZ3pvbmI5Ymdpem5kaGlodW4wZnczdCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/mnOS9hQ87XX8t0ZO9O/giphy.gif",
@@ -280,7 +904,10 @@ const exerciseGifs = {
 };
 
 function generateProgram() {
-    const user = JSON.parse(localStorage.getItem('users'))[activeUser];
+    let usersStr = localStorage.getItem('users');
+    if (!usersStr) return;
+    const users = JSON.parse(usersStr);
+    const user = users[activeUser];
     const loc = document.getElementById('location').value;
     const goal = document.getElementById('goal').value;
     const level = user.profile.level || 'beginner';
@@ -327,7 +954,6 @@ function generateProgram() {
 
     let exercises = pool.sort(() => 0.5 - Math.random()).slice(0, count).map(name => ({
         name,
-        // БЕРЕМО ГІФКУ ЗІ СЛОВНИКА АБО ЗАГЛУШКУ
         gif: exerciseGifs[name] || `https://placehold.co/600x400/222/dfc89a?text=${encodeURIComponent(name)}`,
         reps
     }));
@@ -363,14 +989,13 @@ function saveProgram() {
 
 function renderSaved() {
     let user = JSON.parse(localStorage.getItem('users'))[activeUser];
-    const container = document.getElementById('savedProgramsList'); // Переконайся, що у тебе є такий ID в HTML
+    const container = document.getElementById('savedProgramsList');
 
     if (!user.saved?.length) {
         container.innerHTML = "<p style='text-align:center; color:#888; padding:20px;'>Збережених планів поки немає.</p>";
         return;
     }
 
-    // Рендеримо за новою структурою: план-картка -> заголовок -> список вправ
     container.innerHTML = user.saved.map((plan, i) => `
         <li class="plan-card">
             <div class="plan-header">
@@ -389,6 +1014,7 @@ function renderSaved() {
         </li>
     `).join('');
 }
+
 function deleteSaved(i) {
     let users = JSON.parse(localStorage.getItem('users'));
     users[activeUser].saved.splice(i, 1);
@@ -411,12 +1037,27 @@ function updateDashboardUI() {
 
 function updateUI() {
     const isAuth = !!activeUser;
+
+    // Навігація
     ['navHome', 'navProfile', 'navSaved'].forEach(n => {
         const el = document.getElementById(n);
         if(el) el.style.display = isAuth ? 'block' : 'none';
     });
+
+    // Кнопка Вхід/Вихід
     const navAuth = document.getElementById('navAuth');
-    if(navAuth) navAuth.innerHTML = isAuth ? `<a href="#" onclick="logout()">Вихід</a>` : `<a href="#" onclick="showSection('auth')">Вхід</a>`;
+    if(navAuth) {
+        navAuth.innerHTML = isAuth
+            ? `<a href="#" onclick="logout()">Вихід</a>`
+            : `<a href="#" onclick="openLogin()">Вхід</a>`;
+    }
+
+    // --- ЛОГІКА ЧАТУ ---
+    const chatBtn = document.getElementById('chat-trigger');
+    if (chatBtn) {
+        // Показуємо кнопку чату ТІЛЬКИ якщо користувач залогінений
+        chatBtn.style.display = isAuth ? 'block' : 'none';
+    }
 }
 
 // --- 7. МОДАЛЬНІ ВІКНА ---
@@ -430,14 +1071,37 @@ function closeModal() {
     document.getElementById('gifModal').style.display = 'none';
 }
 
-// Викликати, коли треба саме ВХІД
 function openLogin() {
+    // 1. Показуємо основну секцію авторизації
     showSection('auth');
-    toggleAuthForms(false);
+
+    // 2. Отримуємо посилання на блоки
+    const loginBox = document.getElementById('loginBox');
+    const registerBox = document.getElementById('registerBox');
+
+    // 3. ПРИМУСОВО вмикаємо Вхід і вимикаємо Реєстрацію
+    if (loginBox && registerBox) {
+        loginBox.style.display = 'block';
+        registerBox.style.display = 'none';
+    }
+
+    // Скролимо вгору, щоб користувач точно бачив форму
+    window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-// Викликати, коли треба саме РЕЄСТРАЦІЮ
 function openRegister() {
+    // 1. Показуємо основну секцію авторизації
     showSection('auth');
-    toggleAuthForms(true);
+
+    // 2. Отримуємо посилання на блоки
+    const loginBox = document.getElementById('loginBox');
+    const registerBox = document.getElementById('registerBox');
+
+    // 3. ПРИМУСОВО вмикаємо Реєстрацію і вимикаємо Вхід
+    if (loginBox && registerBox) {
+        loginBox.style.display = 'none';
+        registerBox.style.display = 'block';
+    }
+
+    window.scrollTo({ top: 0, behavior: 'smooth' });
 }
