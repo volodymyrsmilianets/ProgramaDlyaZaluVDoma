@@ -420,6 +420,17 @@ select {
     height: 35px !important;
     background: var(--accent-color) !important;
     border: none !important;
+
+    /* ДОДАЙ ЦІ РЯДКИ: */
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    padding: 0 !important; /* Прибираємо внутрішні відступи, які можуть зміщувати */
+}
+
+/* Також переконайся, що SVG всередині не має зайвих відступів */
+#send-btn svg {
+    margin: 0 !important;
 }
 
 #chat-trigger {
