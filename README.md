@@ -8,7 +8,7 @@ TRPoint — це веб-додаток для персоналізованих �
 
 ### Технологічний стек
 * **Frontend:** HTML5, CSS3 (Modern UI), JavaScript (Vanilla).
-* **AI Integration:** Google Gemini API (Model: 1.5 Flash).
+* **AI Integration:** Google Gemini API (Model: 2.5 Flash-Lite).
 * **Patterns:** Function Calling (модель ініціює виклик графічних вікон інструкцій).
 
 ### Інструкція із запуску
